@@ -4,7 +4,6 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
-// Middleware for authentication
 const auth = (req, res, next) => {
   const token = req.header('x-auth-token');
   if (!token) return res.status(401).json({ msg: 'No token, authorization denied' });
@@ -18,7 +17,6 @@ const auth = (req, res, next) => {
   }
 };
 
-// Middleware for admin authorization
 const adminAuth = (req, res, next) => {
   if (req.user.admin !== 'yes') {
     return res.status(403).json({ msg: 'Access denied' });
@@ -26,7 +24,6 @@ const adminAuth = (req, res, next) => {
   next();
 };
 
-// Admin Login
 router.post('/adminlogin', async (req, res) => {
   const { email, password } = req.body;
 
@@ -51,7 +48,6 @@ router.post('/adminlogin', async (req, res) => {
   }
 });
 
-// User Login
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
@@ -74,12 +70,10 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// Check Authentication
 router.get('/auth', auth, (req, res) => {
   res.status(200).json({ msg: 'Authorized' });
 });
 
-// Register User
 router.post('/register', async (req, res) => {
   const { name, email, password, confirmPassword, admin } = req.body;
 
@@ -106,7 +100,6 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// Admin Protected Route Example
 router.get('/admindashboard', auth, adminAuth, (req, res) => {
   res.send('Admin Dashboard');
 });

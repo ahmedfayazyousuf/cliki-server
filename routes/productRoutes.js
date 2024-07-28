@@ -4,7 +4,6 @@ const Product = require('../models/Products');
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 
-// Middleware to verify token for any logged-in user
 const auth = (req, res, next) => {
   const token = req.header('x-auth-token');
   if (!token) return res.status(401).json({ msg: 'No token, authorization denied' });
@@ -18,7 +17,6 @@ const auth = (req, res, next) => {
   }
 };
 
-// Middleware to verify if user is admin
 const adminAuth = async (req, res, next) => {
   const token = req.header('x-auth-token');
   if (!token) return res.status(401).json({ msg: 'No token, authorization denied' });
@@ -27,8 +25,7 @@ const adminAuth = async (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = decoded;
 
-    // Check if user is an admin
-    const user = await User.findById(decoded.id); // Use `decoded.id` to fetch the user
+    const user = await User.findById(decoded.id); 
     if (!user || user.admin !== 'yes') {
       return res.status(403).json({ msg: 'Access denied' });
     }
@@ -39,7 +36,6 @@ const adminAuth = async (req, res, next) => {
   }
 };
 
-// Add product (admin only)
 router.post('/add', adminAuth, async (req, res) => {
   const { name, description, price, imageUrl } = req.body;
 
@@ -63,7 +59,6 @@ router.post('/add', adminAuth, async (req, res) => {
   }
 });
 
-// Get all products (any logged-in user)
 router.get('/', auth, async (req, res) => {
   try {
     const products = await Product.find();
